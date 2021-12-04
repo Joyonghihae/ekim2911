@@ -29,21 +29,29 @@ int main() {
 			return -2;
 		}
 		
-		// leng ´Â 1Â÷ÆÀ(±âÁ¸ÆÀ)
+		leng[strlen(leng) - 1] = '\0';
 		
-		printf("Processing %s: \n", leng);
-		processGames(leng);
-		// close the file, thus creating the file
-		if (fclose(fp) != 0) {
-			// the closing of the file failed
-			printf("Can't close file opened\n");
+		printf("\nProcessing %s: \n", leng);
 
-			return -3;
-		}
+
+
+		
+		processGames(leng);
+
+	}
+
+
+	// close the file, thus creating the file
+	if (fclose(fp) != 0) {
+		// the closing of the file failed
+		printf("Can't close file opened\n");
+
+		return -3;
 	}
 
 	return 0;
 }
+
 int processGames(char fileName[]){
 
 	FILE* fp1 = NULL;
@@ -59,7 +67,7 @@ int processGames(char fileName[]){
 	strcpy(leng01, fileName);
 	fp1 = fopen(leng01, "r");
 	if (fp1 == NULL) {
-		printf("Can't open the file\n");
+		printf("Can't open the file what\n");
 
 		return -4;
 	}
