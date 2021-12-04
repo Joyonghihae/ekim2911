@@ -27,11 +27,20 @@ int main() {
 			}
 
 			return -2;
+		} 
+		
+		int len = strlen(leng);
+		if (leng[len - 1] == '\n') {
+			leng[len - 1] = 0;
 		}
+		//leng[strlen(leng) - 1] = '\0';
+		if (strlen(leng) == 0) {
+			printf("This is blank!");
+			// make error -> continue / no error ms
+		}
+
 		
-		leng[strlen(leng) - 1] = '\0';
-		
-		printf("\nProcessing %s: \n", leng);
+		printf("Processing %s: \n", leng);
 
 
 
@@ -67,7 +76,7 @@ int processGames(char fileName[]){
 	strcpy(leng01, fileName);
 	fp1 = fopen(leng01, "r");
 	if (fp1 == NULL) {
-		printf("Can't open the file what\n");
+		printf("Can't open the file\n");
 
 		return -4;
 	}
@@ -82,6 +91,10 @@ int processGames(char fileName[]){
 
 			return -2;
 		}
+		if (strlen(leng01) == 1) {
+			printf("This is blank!");
+			// make error -> continue / no error ms
+		} 
 		char number[40] = { 0 };
 		char name[40] = { 0 };
 		int scoreNumber = 0;
@@ -115,7 +128,7 @@ int processGames(char fileName[]){
 	}
 	double result = 0;
 	result = (2 * (score01 + score03)) / (2 * (score01 + score02 + score03));
-	printf("Seasn result for %s: %.3f (%d-%d-%d)\n ", blbl, result,win,lost,tied);
+	printf("Seasn result for %s: %.3f (%d-%d-%d)\n\n", blbl, result,win,lost,tied);
 
 	if (fclose(fp1) != 0) {
 		// the closing of the file failed
