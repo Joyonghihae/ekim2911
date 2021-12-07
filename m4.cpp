@@ -3,7 +3,9 @@ FILE : m4.cpp
 PROJECT : Major4
 PROGRAMMER : Eunyoung Kim
 FIRST VERSION : 2021/12/06
-DECRIPTION : 
+DECRIPTION : Open the teams.txt file to read the result files in that file. 
+			Output the results with the corresponding result files. Finally, 
+			calculate and indicate the total score.
 
 */
 
@@ -22,15 +24,16 @@ int processGames(char fileName[]);
 int main() {
 
 	FILE* fp = NULL;
-	char leng[kArrayLength] = { 0 };
+	char fileLength[kArrayLength] = { 0 };
+	int resultGame = 0;
 	fp = fopen("teams.txt", "r");
 	if (fp == NULL) {
 		printf("Can't open teams.txt\n");
 
 		return -1;
 	}
-
-	while (fgets(leng, sizeof leng, fp) > 0) {
+	
+	while (fgets(fileLength, sizeof fileLength, fp) > 0) {
 		if (ferror(fp)) {
 			printf("Error reading line from file\n");
 			// close the file, thus creating the file
@@ -42,21 +45,18 @@ int main() {
 			return -2;
 		} 
 
-		int len = strlen(leng);
-		if (leng[len - 1] == '\n') {
-			leng[len - 1] = 0;
+		int checkEnter = strlen(fileLength);
+		if (fileLength[checkEnter - 1] == '\n') {
+			fileLength[checkEnter - 1] = 0;
 		}
-		if (strlen(leng) == 0) {
+		if (strlen(fileLength) == 0) {
 			continue;
-		} 
-
-		processGames(leng);
-		
-		
-
+		}
+		resultGame = processGames(fileLength);
+		if (resultGame == -1) {
+			printf("There is no result file");
+		}
 	}
-
-
 	// close the file, thus creating the file
 	if (fclose(fp) != 0) {
 		// the closing of the file failed
@@ -69,144 +69,167 @@ int main() {
 }
 
 
-// check error
-int processGames(char fileName[]){
 
+/*
+FUNCTION	: processGames
+DESCRIPTION : Get the values of the files and output the results. 
+			  It also outputs the final score.
+PARAMENTERS :
+	char fileName :  Read the file name.
+RETURNS		:
+	int 			: The corresponding value is returned.
+*/
+int processGames(char fileName[]){
 	FILE* fp1 = NULL;
-	char leng01[kArrayLength] = { 0 };
-	int test02 = 0;
-	char blbl[kArrayLength] = { 0 };
-	double score01 = 0;
-	double score02 = 0;
-	double score03 = 0;
+	char resultFile[kArrayLength] = { 0 };
+	char separateArray[kArrayLength] = { 0 };
+	char resultScore[kArrayLength] = { 0 };
+	char opponentArray[kArrayLength] = { 0 };
+	int seperateName = 0;
+	int scoreNumber = 0;
+	int opponent = 0;
+	double winScore = 0;
+	double lostScore = 0;
+	double tiedScore = 0;
 	int win = 0;
 	int lost = 0;
 	int tied = 0;
+	int second = 2;
+	double result = 0;
 	int check = -1;
-	int check01 = 0;
 	if (fileName == NULL) {
 		return check;
 	}
 	else {
 
-		strcpy(leng01, fileName);
-		fp1 = fopen(leng01, "r");
+		strcpy(resultFile, fileName);
+		fp1 = fopen(resultFile, "r");
 		if (fp1 == NULL) {
-			printf("Warning: Can't open %s Skipping team.\n\n", leng01);
+			printf("Warning: Can't open %s Skipping team.\n\n", resultFile);
 
 			return -4;
 		}
-		printf("Processing %s: \n", leng01);
-		while (fgets(leng01, sizeof leng01, fp1) > 0) {
+		printf("Processing %s: \n", resultFile);
+		while (fgets(resultFile, sizeof resultFile, fp1) > 0) {
 			if (ferror(fp1)) {
 				printf("Error reading line from file\n");
 				if (fclose(fp1) != 0) {
 					printf("Can't close file opened for reading\n");
 				}
 
-				return -2;
+				return -5;
 			}
 
-			if ((strchr(leng01, ',') == 0) || (strchr(leng01, '-') == 0)) {
+			if ((strchr(resultFile, ',') == 0) || (strchr(resultFile, '-') == 0)) {
 				printf("\tWarning: malformed line. Skipping game.\n");
 				continue;
 			}
 
 
-			if (strlen(leng01) == 1) {
-
+			if (strlen(resultFile) == 1) {
 				continue;
 			}
 			else {
-				char number[kArrayLength] = { 0 };
-				char name[kArrayLength] = { 0 };
-				int scoreNumber = 0;
-				int opponent = 0;
-				strcpy(number, leng01);
-				parseLine(number, name, &scoreNumber, &opponent);
+				
+				strcpy(resultScore, resultFile);
+				parseLine(resultScore, opponentArray, &scoreNumber, &opponent);
 
-				if (parseLine(number, name, &scoreNumber, &opponent) == -1) {
+				if (parseLine(resultScore, opponentArray, &scoreNumber, &opponent) == -1) {
 					printf("\tThere is no game result\n");
 				}
 				else {
 					for (int i = 0; i < fileName[i]; i++) {
 
+						//Output the rest of the string except for txt.
 						if ((fileName[i] >= 'A' && fileName[i] <= 'Z') || (fileName[i] >= 'a' && fileName[i] <= 'z') || fileName[i] == ' ') {
-							test02 = fileName[i];
-							blbl[i] = test02;
+							seperateName = fileName[i];
+							separateArray[i] = seperateName;
 						}
 
 					}
 
+					//It represents win, lost, and tied.
 					if (scoreNumber > opponent) {
-						printf("\t%s best %s %d-%d\n", blbl, name, scoreNumber, opponent);
-						score01 += scoreNumber;
+						printf("\t%s best %s %d-%d\n", separateArray, opponentArray, scoreNumber, opponent);
+						winScore += scoreNumber;
 						win++;
 					}
 					else if (scoreNumber < opponent) {
-						printf("\t%s lost to %s %d-%d\n", blbl, name, opponent, scoreNumber);
-						score02 += scoreNumber;
+						printf("\t%s lost to %s %d-%d\n", separateArray, opponentArray, opponent, scoreNumber);
+						lostScore += scoreNumber;
 						lost++;
 					}
 					else if (scoreNumber == opponent) {
-						printf("\t%s and %s tied at %d\n", blbl, name, scoreNumber);
-						score03 += scoreNumber;
+						printf("\t%s and %s tied at %d\n", separateArray, opponentArray, scoreNumber);
+						tiedScore += scoreNumber;
 						tied++;
 					}
 				}
 			}
 		}
-		double result = 0;
-		result = (2 * (score01 + score03)) / (2 * (score01 + score02 + score03));
-		printf("Seasn result for %s: %.3f (%d-%d-%d)\n\n", blbl, result, win, lost, tied);
+
+		//It's a calculation formula for the total score.
+		result = (second * (winScore + tiedScore)) / (second * (winScore + lostScore + tiedScore));
+		printf("Seasn result for %s: %.3f (%d-%d-%d)\n\n", separateArray, result, win, lost, tied);
 
 		if (fclose(fp1) != 0) {
 			// the closing of the file failed
 			printf("Can't close file opened\n");
 
-			return -4;
+			return -6;
 		}
 
 	}
 	
-	return check01;
+	return 0;
 	}
 
 
 
+/*
+FUNCTION	: parseLine
+DESCRIPTION : Get the values of the files and output the results.
+			  It also outputs the final score.
+PARAMENTERS :
+	char resultArray[]	: Get the full length of the game result.
+	char nameArray[]	: Only the other team's name is indicated in the entire length.
+	int *pScore			: Only team scores are displayed on the entire length.
+	int *pOpponent		: Only the opponent's score is displayed on the entire length.
+RETURNS		:
+	int 				: The corresponding value is returned.
+*/
 int parseLine(char resultArray[], char nameArray[], int *pScore, int *pOpponent) {
-	int test = 0;
-	int count = 0;
-	int test01 = 0;
-	int check = -1;
-	int checkNumber = 1;
-
+	int opponentName = 0;
+	int errorNumber = -1;
 	if (resultArray == NULL) {
-		return check;
+		return errorNumber;
 
 	} else {
+		char gameArray[kArrayLength] = {0};
+		char* opponentScore[kArrayLength] = {0};
+		char* myScore[kArrayLength] = {0};
 		
+		//Put a string in an array
+		strcpy(gameArray, resultArray);
+
+		//Check the specific value
+		if (strchr(gameArray, '-') && strchr(gameArray, ',') != NULL) {
+			*opponentScore = strchr(gameArray, ',') + 1;
+			*pScore = atoi(*opponentScore);
+			*myScore = strchr(gameArray, '-') + 1;
+			*pOpponent = atoi(*myScore);
+		} 
+
+		//Check the name of the other team
 		for (int i = 0; resultArray[i]; i++) {
-
 			if ((resultArray[i] >= 'A' && resultArray[i] <= 'Z') || (resultArray[i] >= 'a' && resultArray[i] <= 'z') || resultArray[i] == '.' || resultArray[i] == ' ') {
-				test01 = resultArray[i];
-				nameArray[i] = test01;
+				opponentName = resultArray[i];
+				nameArray[i] = opponentName;
 			}
-
-			if (resultArray[i] >= '0' && resultArray[i] <= '9') {
-				test = resultArray[i] - '0';
-				count++;
-				if (count == 1) {
-					*pScore = test;
-				} else if (count == 2) {
-					*pOpponent = test;
-				}
-			}	
 		}
-		if (count != 2) {
-			return check;
-		}	
+
+		return 0;
 	}
 
-	return checkNumber;
+	return 0;
 }
